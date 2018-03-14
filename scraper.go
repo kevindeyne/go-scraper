@@ -18,6 +18,27 @@ type Game struct {
 	Author      string
 }
 
+func cleanTitle(t string) string {
+	byIndex := strings.Index(t, " by ")
+	title := string(t[0:byIndex])
+
+	startBracketIndex := -1
+
+	startBracketIndex = strings.LastIndex(title, " (")
+	if startBracketIndex != -1 {
+		title = string(title[0:startBracketIndex])
+	}
+
+	startBracketIndex = strings.LastIndex(title, " [")
+	if startBracketIndex != -1 {
+		title = string(title[0:startBracketIndex])
+	}
+
+	fmt.Println(title)
+
+	return title
+}
+
 func main() {
 	url := "https://itch.io/games"
 
@@ -44,11 +65,7 @@ func main() {
 
 	c.OnHTML("div.left_col", func(e *colly.HTMLElement) {
 		title := e.DOM.ParentsUntil("~").Find("title").Text()
-
-		byIndex := strings.Index(title, " by ")
-		title = string(title[0:byIndex])
-
-		fmt.Println(title)
+		cleanTitle(title)
 		//fmt.Println(e.Text)
 	})
 
