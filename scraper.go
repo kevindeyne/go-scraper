@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -26,7 +27,7 @@ func main() {
 		colly.Async(true),
 		colly.CacheDir("./itchio_cache"),
 	)
-	detailCollector := c.Clone()
+	//detailCollector := c.Clone()
 
 	games := make([]Game, 0, 25)
 
@@ -41,8 +42,14 @@ func main() {
 		e.Request.Visit(e.Attr("href"))
 	})
 
-	c.OnHTML("div.formatted_description", func(e *colly.HTMLElement) {
-		fmt.Println(e.Text)
+	c.OnHTML("div.left_col", func(e *colly.HTMLElement) {
+		title := e.DOM.ParentsUntil("~").Find("title").Text()
+
+		byIndex := strings.Index(title, " by ")
+		title = string(title[0:byIndex])
+
+		fmt.Println(title)
+		//fmt.Println(e.Text)
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
@@ -56,5 +63,5 @@ func main() {
 	enc.SetIndent("", "  ")
 
 	// Dump json to the standard output
-	enc.Encode(courses)
+	enc.Encode(games)
 }
